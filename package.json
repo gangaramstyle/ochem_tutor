@@ -1,0 +1,13 @@
+{
+  "name": "express-foundation",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">= 0.6.19",
+    "npm": ">= 1.1.x"
+  },
+  "dependencies": {
+    "express": "^3.0.0",
+    "jade": "^1.5.0",
+    "nconf": "^0.6.9"
+  }
+}
