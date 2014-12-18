@@ -1,6 +1,6 @@
 var utils = require('./lib/utils.js');
 
-module.exports = function(app, express, nconf, sessionStore) {
+module.exports = function(app, express) {
   // app.configure
   app.set('views', __dirname + '/views');
   app.set('view engine', 'jade');
