@@ -17,7 +17,7 @@ module.exports = function(app, express) {
 
   // by default: session middleware uses the memory store bundled with Connect
   app.use(express.session({
-    secret: 'pedometer almonds',
+    secret: 'dObQ,4qD(L/H^|Cpmh6(N6z0EHv0l5',
     resave: true,
     saveUninitialized: true
   }));

@@ -8,9 +8,9 @@ mongoose.connect('mongodb://localhost:27017/chemyst-db');
 var server = http.createServer(app);
 
 require('./settings')(app, express);
-require('./routes')(app);
-require('./routes/student')(app);
-require('./routes/instrutor')(app);
+require('./routes/index.js')(app);
+require('./routes/instructor.js')(app);
+require('./routes/student.js')(app);
 
 server.listen(process.env.PORT || 3155);
 console.log("Listening at 127.0.0.1:" + 3155);
