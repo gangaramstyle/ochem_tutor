@@ -1,0 +1,91 @@
+.sidebar {
+  width: 28px;
+  display: table-cell;
+  vertical-align: top;
+}
+
+.sidebar-link {
+  display: block;
+  text-align: center;
+  padding: 3px;
+}
+
+.sidebar-link.inactive {
+  border-right: 1px solid #bbb;
+  border-left: 4px solid transparent;
+}
+
+.sidebar-link.active {
+  border-top: 1px solid #bbb;
+  border-bottom: 1px solid #bbb;
+  border-left: 4px solid #ffa07a;
+  border-right: none;
+}
+
+
+.inactive > a{
+  color: #bbb;
+  text-decoration: none;
+}
+
+.active > a {
+  color: #666;
+  text-decoration: none;
+}
+
+a:hover, a:focus {
+  color: #666;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#dashboard {
+  width: 100%;
+  min-height: 100%;
+  /*background-color: red;*/
+  display: table-cell;
+  padding: 0px 50px;
+}
+
+form input, textarea {
+  margin: 10px 0px;
+  padding: 5px;
+  display: block;
+}
+
+form input.title {
+}
+
+form textarea.content {
+  width: 480px;
+}
+
+.concept-tags-container {
+  width: 480px;
+  border: 1px solid #a9a9a9;
+  padding: 5px;
+  margin: 10px 0px;
+  overflow: auto;
+}
+
+.concept-tag {
+  border: 1px solid #a9a9a9;
+  padding: 0px 5px;
+  float: left;
+  margin: 2px;
+  background-color: #eee;
+}
+
+.concept {
+  margin-right: 3px;
+}
+
+a.remove {
+  color: #bbb;
+  text-decoration: none;
+}
+
+a.remove:hover {
+  color: #666;
+  text-decoration: none;
+}

@@ -1,0 +1,85 @@
+(function(window, document, undefined) {
+  // Retrieve and compile the Handlebars template for rendering posts
+  var $newQuestion = $('#new-question-template');
+  var $questionsList = $('#questions-list-template')
+  var $analytics = $('#analytics-template');
+  var templates = {
+    renderNewQuestion: Handlebars.compile($newQuestion.html()),
+    renderQuestionsList: Handlebars.compile($questionsList.html()),
+    renderAnalytics: Handlebars.compile($analytics.html())
+  };
+
+  var InstructorView = {};
+
+  InstructorView.render = function() {
+    var $dashboard = $('#dashboard');
+    var $active = $('.active');
+    if ($active.hasClass('new-question')) {
+      InstructorView.renderNewQuestion($dashboard);
+    } else if ($active.hasClass('question-list')) {
+      InstructorView.renderQuestionsList($dashboard);
+    } else if ($active.hasClass('analytics')) {
+      InstructorView.renderAnalytics($dashboard);
+    }
+    var $sidebar = $('.sidebar');
+    InstructorView.renderSidebar($sidebar);
+  }
+
+  InstructorView.renderNewQuestion = function($dashboard) {
+    $dashboard.html($(templates.renderNewQuestion()));
+
+    // Insert concept-tag related listener
+
+    $newQuestion = $('form.new-question');
+    $newQuestion.submit(function(event) {
+      event.preventDefault();
+      var title = $newQuestion.find('.title').val();
+      var content = $newQuestion.find('.content').val();
+      InstructorModel.newQuestion({
+        title: title,
+        content: content
+      }, function(error, question) {
+        if (error) {
+          $('.error').text('Failed to create new question.');
+        } else {
+          $newQuestion.find('.title, .content').val('');
+          // $newQuestion.find('.content').val('');
+          $('.success').text('Created new question.');
+        }
+      });
+
+    });
+  }
+
+  InstructorView.renderQuestionsList = function($dashboard) {
+    InstructorModel.loadQuestionList(function(error, questions) {
+      $dashboard.html($(templates.renderQuestionsList({
+        questions: questions
+      })));
+    });
+  }
+
+  InstructorView.renderAnalytics = function($dashboard) {
+    InstructorModel.loadAnalytics(function(error, analytics) {
+      $dashboard.html($(templates.renderAnalytics(analytics)));
+    });
+  }
+
+  InstructorView.renderSidebar = function($sidebar) {
+    $sidebar.unbind('click');
+    $sidebar.click(function(event) {
+      var $inactiveTarget = $(event.target).closest('.inactive');
+      if ($inactiveTarget.size() > 0) {
+        var $activeTarget = $inactiveTarget.siblings('.active')
+        $inactiveTarget.toggleClass('active inactive');
+        $activeTarget.toggleClass('active inactive');
+        InstructorView.render();
+      }
+    });
+  }
+
+  InstructorView.render(); // render the Instructor View
+
+  window.InstructorView = InstructorView;
+
+})(this, this.document);

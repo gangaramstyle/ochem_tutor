@@ -1,4 +1,57 @@
 extend layout
 
 block content
-  h1 I'm an instructor!
+  link(rel="stylesheet", href="/css/instructor.css")
+
+  //- h1 Greetings, Instructor #{username}!
+  div.sidebar
+    div.sidebar-link.new-question.active
+      a.plus(href="#")
+        i.fa.fa-plus
+    div.sidebar-link.question-list.inactive
+      a.list(href="#")
+        i.fa.fa-list
+    div.sidebar-link.analytics.inactive
+      a.bar-chart(href="#")
+        i.fa.fa-bar-chart
+
+  div(id="dashboard")
+
+  script(type="text/x-handlebars-template" id="new-question-template")
+    h1 Insert New Question
+    div.error
+    div.success
+    form.new-question
+      textarea.content(placeholder="Content" rows="4")
+      div.concept-tags-container(contenteditable="true")
+      //- input.concept-tags(placeholder="Tags")
+      button.btn.btn-default Submit
+
+  script(type="text/x-handlebars-template" id="questions-list-template")
+    h1 Questions List
+    table.table.table-hover.table-bordered
+      tr
+        th Content
+        th Concepts
+        th Correct
+        th Responses
+      {{#each questions}}
+      tr
+        td {{content}}
+        td {{concepts}}
+        td {{numCorrect}}
+        td {{numResponses}}
+      {{/each}}
+
+
+  script(type="text/x-handlebars-template" id="analytics-template")
+    h1 Analytics
+
+  script(type="text/x-handlebars-template" id="concept-tag-template")
+    div.concept-tag
+      span.concept {{concept}}
+      a.remove
+        i.fa.fa-remove
+
+  script(src="/js/instructor-model.js")
+  script(src="/js/instructor-view.js")
