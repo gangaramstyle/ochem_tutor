@@ -23,9 +23,26 @@ block content
     div.success
     form.new-question
       textarea.content(placeholder="Content" rows="4")
+      // Adding a button that allows instructor to draw structure and insert into box they are typing in
+      button.btn.btn-default Draw Structure
+      p notes to myself:
+      p the following should be hidden unless someone clicks draw structure
+      p also, draw structure, insert, cancel, and preview should not be part of the form
+      // Should make hidden unless someone clicks draw structure
+      div(id="structure-tools")
+        div
+          button.btn.btn-default Insert
+          button.btn.btn-default Cancel 
+        div
+          iframe(id="sketch" src="/js/lib/marvinjs/editor.html" style="min-width:500px;")
+
+      // Is there a reason for using a div instead of the input element?
       div.concept-tags-container(contenteditable="true")
       //- input.concept-tags(placeholder="Tags")
+      // There should be a way for instructors to preview the question before they submit
+      button.btn.btn-default Preview
       button.btn.btn-default Submit
+      p I am imagining storing the following in the database. The question stored as 'Word word word structure1 word word word structure2' and having structure1 and 2 stored within the database as images. I am imagining it being done in a similar way to printing strings where you have "asdf %s asdf %s", str1, str2. As for the answers, we need to store those as textual representations (but also maybe as images).
 
   script(type="text/x-handlebars-template" id="questions-list-template")
     h1 Questions List
