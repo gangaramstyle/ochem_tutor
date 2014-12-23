@@ -62,6 +62,9 @@
         
         sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
           structures[structIndex].img = img;
+          $("#figures").append("<img id='image"+structures[structIndex].name+"' class='bordered'/>");
+          $("#image"+structures[structIndex].name).attr("src", img);
+          console.log("#image"+structures[structIndex].name);
         }, function(error) {
           alert("Img export failed:"+error);
         });
@@ -87,7 +90,6 @@
       currStruct = {name: getNewName(), img: null, mol: mol}
       importMol(currStruct.mol);
       $('#marvinjs').modal('show');
-      console.log(currStruct);
     }
 /*
     function editStruct(____) {
@@ -111,11 +113,11 @@
 
     $("#Modal").click(function() {
       createNewStruct(defaultMol);
-      console.log(structures);
     });
 
     $("#Insert").click(function() {
       saveStruct();
+      $('#marvinjs').modal('hide');
 
     })
 
