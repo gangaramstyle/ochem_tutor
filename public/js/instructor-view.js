@@ -30,7 +30,7 @@
 
     // Insert concept-tag related listener
 
-    $newQuestion = $('form.new-question');
+    var $newQuestion = $('form.new-question');
     $newQuestion.submit(function(event) {
       event.preventDefault();
       var title = $newQuestion.find('.title').val();

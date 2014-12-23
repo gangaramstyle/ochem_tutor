@@ -1,6 +1,7 @@
 extend layout
 
 block content
+  link(rel="stylesheet", href="/css/lib/bootstrap-tags.css")
   link(rel="stylesheet", href="/css/instructor.css")
 
   //- h1 Greetings, Instructor #{username}!
@@ -23,8 +24,9 @@ block content
     div.success
     form.new-question
       textarea.content(placeholder="Content" rows="4")
-      div.concept-tags-container(contenteditable="true")
-      //- input.concept-tags(placeholder="Tags")
+
+      //- div.concept-tags-container(contenteditable="true")
+      input(data-role="tagsinput")
       button.btn.btn-default Submit
 
   script(type="text/x-handlebars-template" id="questions-list-template")
@@ -52,6 +54,8 @@ block content
       span.concept {{concept}}
       a.remove
         i.fa.fa-remove
+
+  script(src="/js/lib/bootstrap-tags.min.js")
 
   script(src="/js/instructor-model.js")
   script(src="/js/instructor-view.js")
