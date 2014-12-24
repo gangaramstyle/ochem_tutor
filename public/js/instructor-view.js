@@ -35,8 +35,8 @@
     var currStruct = null;
 
     var imgSettings = {
-      'width' : 150,
-      'height' : 150
+      'width' : 100,
+      'height' : 100
     };
 
     function importMol(mol) {
@@ -62,9 +62,8 @@
         
         sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
           structures[structIndex].img = img;
-          $("#figures").append("<img id='image"+structures[structIndex].name+"' class='bordered'/>");
-          $("#image"+structures[structIndex].name).attr("src", img);
-          console.log("#image"+structures[structIndex].name);
+          $("#figures").append("<img id='"+structures[structIndex].name+"' class='thumbnails bordered'/>");
+          $("#"+structures[structIndex].name).attr("src", img);
         }, function(error) {
           alert("Img export failed:"+error);
         });
@@ -89,15 +88,13 @@
     function createNewStruct(mol) {
       currStruct = {name: getNewName(), img: null, mol: mol}
       importMol(currStruct.mol);
-      $('#marvinjs').modal('show');
     }
-/*
-    function editStruct(____) {
-      currStruct = structures[];
-      importMol(currObject.mol);
-      $('#marvinjs').modal('show');
-      console.log(currObject);
-    } */
+
+    function editStruct(structName) {
+      var structIndex = getIndex(structName);
+      currStruct = structures[structIndex];
+      importMol(currStruct.mol);
+    }
 
     
     function saveStruct() {
@@ -113,13 +110,18 @@
 
     $("#Modal").click(function() {
       createNewStruct(defaultMol);
+      $('#marvinjs').modal('show');
     });
 
     $("#Insert").click(function() {
       saveStruct();
       $('#marvinjs').modal('hide');
-
     })
+
+    $("#figures").on('click', 'img.thumbnails', function() {
+      editStruct($(this).attr('id'));
+      $('#marvinjs').modal('show');
+    });
 
 
 

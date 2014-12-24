@@ -89,3 +89,15 @@ a.remove:hover {
   color: #666;
   text-decoration: none;
 }
+
+.bordered {
+  border-width: 1px;
+  border-style: solid;
+  margin: 2px;
+}
+
+.bordered:hover {
+  border-width: 2px;
+  border-style: solid;
+  margin: 1px;
+}
