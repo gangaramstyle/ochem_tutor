@@ -88,14 +88,12 @@
     function createNewStruct(mol) {
       currStruct = {name: getNewName(), img: null, mol: mol}
       importMol(currStruct.mol);
-      $('#marvinjs').modal('show');
     }
 
     function editStruct(structName) {
       var structIndex = getIndex(structName);
       currStruct = structures[structIndex];
       importMol(currStruct.mol);
-      $('#marvinjs').modal('show');
     }
 
     
@@ -112,6 +110,7 @@
 
     $("#Modal").click(function() {
       createNewStruct(defaultMol);
+      $('#marvinjs').modal('show');
     });
 
     $("#Insert").click(function() {
@@ -121,6 +120,7 @@
 
     $("#figures").on('click', 'img.thumbnails', function() {
       editStruct($(this).attr('id'));
+      $('#marvinjs').modal('show');
     });
 
 
