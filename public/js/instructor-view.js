@@ -1,13 +1,20 @@
 (function(window, document, undefined) {
 
+  var SPACE_KEYCODE = 32;
+  var AT_KEYCODE = 64;
+
   // Retrieve and compile the Handlebars template for rendering posts
   var $newQuestion = $('#new-question-template');
   var $questionsList = $('#questions-list-template')
   var $analytics = $('#analytics-template');
+  var $autocompletePanel = $('#autocomplete-panel-template')
+  var $autocompleteOption = $('#autocomplete-option-template');
   var templates = {
     renderNewQuestion: Handlebars.compile($newQuestion.html()),
     renderQuestionsList: Handlebars.compile($questionsList.html()),
-    renderAnalytics: Handlebars.compile($analytics.html())
+    renderAnalytics: Handlebars.compile($analytics.html()),
+    renderAutocompletePanel: Handlebars.compile($autocompletePanel.html()),
+    renderAutocompleteOption: Handlebars.compile($autocompleteOption.html())
   };
 
   var InstructorView = {};
@@ -28,6 +35,7 @@
 
   InstructorView.renderNewQuestion = function($dashboard) {
     $dashboard.html($(templates.renderNewQuestion()));
+
     var molID = 0;
     var structures = [];
     var defaultMol = "<cml><MDocument></MDocument></cml>";
@@ -50,7 +58,6 @@
 
 
     function exportStructTo(structIndex) {
-
       var mvn = MarvinJSUtil.getEditor("#sketch");
       mvn.then(function (sketcherInstance) {
 
@@ -59,7 +66,7 @@
         }, function(error) {
           alert("Mol export failed:"+error);
         });
-        
+
         sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
           structures[structIndex].img = img;
           $("#figures").append("<img id='"+structures[structIndex].name+"' class='thumbnails bordered'/>");
@@ -78,7 +85,7 @@
           return struct;
         }
       } return -1;
-    } 
+    }
 
     function getNewName() {
       return "" + molID++;
@@ -96,7 +103,7 @@
       importMol(currStruct.mol);
     }
 
-    
+
     function saveStruct() {
       var structIndex = getIndex(currStruct.name);
       if (structIndex == -1) {
@@ -125,9 +132,62 @@
 
 
 
-    // Insert concept-tag related listener
+
 
     var $newQuestion = $('form.new-question');
+    initializeListeners($newQuestion.find('textarea.content[name="question"]'));
+    initializeListeners($newQuestion.find('textarea.content[name="answer"]'));
+
+
+    function initializeListeners($content) {
+      var startCaretPos = -1;
+      var endCaretPos = -1;
+
+      // Insert structure-tag related @ listener
+      $content.keypress(function(event) {
+        var curCaretPos = $content.caret(); // caret position before character insertion
+        if (event.keyCode === AT_KEYCODE) {
+          startCaretPos = curCaretPos + 1;
+        } else if (event.keyCode === SPACE_KEYCODE) {
+          startCaretPos = -1;
+        } else if (startCaretPos >= 0 && startCaretPos < curCaretPos + 1) {
+          var textareaValue = $content.val();
+          var tagValue = (textareaValue.substr(startCaretPos, curCaretPos - startCaretPos) + String.fromCharCode(event.keyCode));
+          InstructorModel.loadStructures(tagValue, function(error, structures) {
+            var $panel = $('.autocomplete-panel');
+            // insert as a sibling of $content
+            $panel.html($(templates.renderAutocompletePanel()));
+            var $options = $('.autocomplete-options');
+            structures.forEach(function(structure) {
+              var $option = $(templates.renderAutocompleteOption({structure: structure}));
+              $options.append($option);
+              console.log($options.html());
+              // $option.prependTo($options);
+            });
+          });
+        }
+      });
+
+      // Keyup fires after default action of the key (caret position has been incremented)
+      $content.keyup(function(event) {
+        var curCaretPos = $content.caret();
+
+        if (curCaretPos < startCaretPos) {
+          startCaretPos = -1;
+        } else {
+          var textareaValue = $content.val();
+          var spacePos = textareaValue.substr(0, curCaretPos).lastIndexOf(' ') + 1; // if no space exists, spacePos will be 0
+          var atPos = textareaValue.substr(spacePos, curCaretPos - spacePos).indexOf('@'); // relative to the space
+          if (atPos >= 0) {
+            startCaretPos = spacePos + atPos + 1;
+          }
+        }
+      });
+    }
+
+    // Insert concept-tag related listener
+
+
     $newQuestion.submit(function(event) {
       event.preventDefault();
       var title = $newQuestion.find('.title').val();

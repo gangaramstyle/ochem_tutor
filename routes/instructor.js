@@ -1,5 +1,6 @@
 var Question = require('../models/question');
-var Concept = require('../models/concept')
+var Concept = require('../models/concept');
+var Structure = require('../models/structure');
 
 module.exports = function(app) {
   app.get('/instructor', function(req, res) {
@@ -45,7 +46,8 @@ module.exports = function(app) {
   })
 
   app.get('/instructor/concepts', function(req, res) {
-    if (!req.query.query) {
+    var query = req.query.query;
+    if (query === undefined) {
       res.send(422, 'Must provide query.');
       return;
     }
@@ -54,7 +56,7 @@ module.exports = function(app) {
         throw error;
       } else {
         res.json(200, concepts.filter(function(concept) {
-          return concept.tag.toLowerCase().indexOf(req.query.query.toLowerCase()) > -1;
+          return concept.tag.toLowerCase().indexOf(query.toLowerCase()) > -1;
         }));
       }
     });
@@ -79,4 +81,20 @@ module.exports = function(app) {
     });
   });
 
+  app.get('/instructor/structures', function(req, res) {
+    var query = req.query.query;
+    if (query === undefined) {
+      res.send(422, 'Must provide query.');
+      return;
+    }
+    Structure.find(function(error, structures) {
+      if (error) {
+        throw error;
+      } else {
+        res.json(200, structures.filter(function(structure) {
+          return structure.tag.toLowerCase().indexOf(query.toLowerCase()) > -1;
+        }));
+      }
+    });
+  });
 };

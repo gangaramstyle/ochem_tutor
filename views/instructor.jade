@@ -26,9 +26,9 @@ block content
     div.error
     div.success
     form.new-question
-      input(data-role="tagsinput")
-      textarea.content(placeholder="Question" rows="6")
-      textarea.content(placeholder="Answer" rows="6")
+      textarea.content(name="question" placeholder="Question" rows="6")
+      div.autocomplete-panel
+      //- textarea.content(name="answer" placeholder="Answer" rows="6")
       input.concept-tags(placeholder="Tags")
       div#figures
       button.btn.btn-default Preview
@@ -74,13 +74,25 @@ block content
   script(type="text/x-handlebars-template" id="analytics-template")
     h1 Analytics
 
+
+  script(type="text/x-handlebars-template" id="autocomplete-panel-template")
+    div.autocomplete-options
+      div.autocomplete-option
+        p.autocomplete-option-label New Structure
+
+
+  script(type="text/x-handlebars-template" id="autocomplete-option-template")
+    div.autocomplete-option
+      p.autocomplete-option-label {{structure.tag}}
+
   script(type="text/x-handlebars-template" id="concept-tag-template")
     div.concept-tag
       span.concept {{concept}}
       a.remove
         i.fa.fa-remove
 
-  script(src="/js/lib/bootstrap-tags.min.js")
+  script(src="/js/lib/bootstraptags.min.js")
+  script(src="/js/lib/jquery.caret.min.js")
 
   script(src="/js/instructor-model.js")
   script(src="/js/instructor-view.js")

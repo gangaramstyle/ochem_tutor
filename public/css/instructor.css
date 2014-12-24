@@ -101,3 +101,10 @@ a.remove:hover {
   border-style: solid;
   margin: 1px;
 }
+
+.autocomplete-panel {
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  width: 100%;
+}

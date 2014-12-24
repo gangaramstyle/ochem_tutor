@@ -108,5 +108,25 @@
     request.send(JSON.stringify(concept));
   };
 
+  /**
+   * Loads structures containing query as a substring.
+   *
+   * Calls: callback(error, results)
+   *  error -- the error that occurred or NULL if no error occurred
+   */
+  InstructorModel.loadStructures = function(query, callback) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function() {
+      if (request.status === STATUS_OK) {
+        callback(null, JSON.parse(request.responseText));
+      } else {
+        callback(request.responseText);
+      }
+    });
+
+    request.open('GET', INSTRUCTOR_URL + '/structures?query=' + query, true);
+    request.send();
+  }
+
   window.InstructorModel = InstructorModel;
 })(this, this.document);
