@@ -48,30 +48,6 @@
       });
     }
 
-
-    function exportStructTo(structIndex) {
-
-      var mvn = MarvinJSUtil.getEditor("#sketch");
-      mvn.then(function (sketcherInstance) {
-
-        sketcherInstance.exportStructure("mrv").then(function(mol) {
-          structures[structIndex].mol = mol;
-        }, function(error) {
-          alert("Mol export failed:"+error);
-        });
-        
-        sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
-          structures[structIndex].img = img;
-          $("#figures").append("<img id='"+structures[structIndex].name+"' class='thumbnails bordered'/>");
-          $("#"+structures[structIndex].name).attr("src", img);
-        }, function(error) {
-          alert("Img export failed:"+error);
-        });
-
-      });
-    }
-
-
     function getIndex(name) {
       for (var struct in structures) {
         if (structures[struct].name == name) {
@@ -102,18 +78,51 @@
       if (structIndex == -1) {
         structures.push(currStruct);
         structIndex = getIndex(currStruct.name);
+        $("#figures").append("<img id='"+structures[structIndex].name+"' class='thumbnails bordered'/>");
         //--create img tag
       }
       exportStructTo(structIndex);
     }
 
+    function exportStructTo(structIndex) {
+
+      var mvn = MarvinJSUtil.getEditor("#sketch");
+      mvn.then(function (sketcherInstance) {
+
+        sketcherInstance.exportStructure("mrv").then(function(mol) {
+          structures[structIndex].mol = mol;
+        }, function(error) {
+          alert("Mol export failed:"+error);
+        });
+        
+        sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
+          structures[structIndex].img = img;
+
+          
+          $("#"+structures[structIndex].name).attr("src", img);
+        }, function(error) {
+          alert("Img export failed:"+error);
+        });
+
+      });
+    }
+
+    function deleteStruct() {
+      if ($("#"+currStruct.name).length) {
+        var structIndex = getIndex(currStruct.name);
+        delete structures[structIndex];
+        $("#"+currStruct.name).remove();
+        console.log(structures);
+      }
+      
+    }
 
     $("#Modal").click(function() {
       createNewStruct(defaultMol);
       $('#marvinjs').modal('show');
     });
 
-    $("#Insert").click(function() {
+    $("#insert").click(function() {
       saveStruct();
       $('#marvinjs').modal('hide');
     })
@@ -121,6 +130,11 @@
     $("#figures").on('click', 'img.thumbnails', function() {
       editStruct($(this).attr('id'));
       $('#marvinjs').modal('show');
+    });
+
+    $("#delete").click(function () {
+      deleteStruct();
+      $('#marvinjs').modal('hide');
     });
 
 
