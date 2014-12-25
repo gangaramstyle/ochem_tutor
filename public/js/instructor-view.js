@@ -1,6 +1,8 @@
 (function(window, document, undefined) {
 
   var SPACE_KEYCODE = 32;
+  var UP_KEYCODE = 38;
+  var DOWN_KEYCODE = 40;
   var AT_KEYCODE = 64;
 
   // Retrieve and compile the Handlebars template for rendering posts
@@ -53,6 +55,27 @@
         sketcherInstance.importStructure("cml", mol).catch(function(error) {
           alert(error);
         });
+      });
+    }
+
+    function exportStructTo(structIndex) {
+      var mvn = MarvinJSUtil.getEditor("#sketch");
+      mvn.then(function (sketcherInstance) {
+
+        sketcherInstance.exportStructure("mrv").then(function(mol) {
+          structures[structIndex].mol = mol;
+        }, function(error) {
+          alert("Mol export failed:"+error);
+        });
+
+        sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
+          structures[structIndex].img = img;
+          $("#figures").append("<img id='"+structures[structIndex].name+"' class='thumbnails bordered'/>");
+          $("#"+structures[structIndex].name).attr("src", img);
+        }, function(error) {
+          alert("Img export failed:"+error);
+        });
+
       });
     }
 
@@ -166,6 +189,7 @@
           var textareaValue = $content.val();
           var tagValue = (textareaValue.substr(startCaretPos, curCaretPos - startCaretPos) + String.fromCharCode(event.keyCode));
           InstructorModel.loadStructures(tagValue, function(error, structures) {
+            console.log(structures);
             var $panel = $('.autocomplete-panel');
             // insert as a sibling of $content
             $panel.html($(templates.renderAutocompletePanel()));
@@ -173,8 +197,6 @@
             structures.forEach(function(structure) {
               var $option = $(templates.renderAutocompleteOption({structure: structure}));
               $options.append($option);
-              console.log($options.html());
-              // $option.prependTo($options);
             });
           });
         }
@@ -182,16 +204,56 @@
 
       // Keyup fires after default action of the key (caret position has been incremented)
       $content.keyup(function(event) {
-        var curCaretPos = $content.caret();
+        var curCaretPos = $content.caret(); // caret position after caret moves
 
         if (curCaretPos < startCaretPos) {
           startCaretPos = -1;
+          $('.autocomplete-options').remove();
         } else {
           var textareaValue = $content.val();
+
+          // should also break tag on newlines
           var spacePos = textareaValue.substr(0, curCaretPos).lastIndexOf(' ') + 1; // if no space exists, spacePos will be 0
           var atPos = textareaValue.substr(spacePos, curCaretPos - spacePos).indexOf('@'); // relative to the space
           if (atPos >= 0) {
             startCaretPos = spacePos + atPos + 1;
+          } else {
+            startCaretPos = -1;
+            $('.autocomplete-options').remove();
+          }
+        }
+      });
+
+      $content.keydown(function(event) {
+        var curCaretPos = $content.caret(); // caret position before caret moves
+        if (startCaretPos >= 0) {
+          var $activeOptions = $('.autocomplete-options');
+          var $activeOption = $('.autocomplete-option.active');
+          if (event.keyCode === UP_KEYCODE) {
+            event.preventDefault();
+            var $prevOption;
+            if ($activeOption.length) {
+              $prevOption = $activeOption.prev();
+            } else {
+              $prevOption = $activeOptions.children().last();
+            }
+            $activeOption.removeClass('active');
+            if ($prevOption.length) { // there exists a previous sibling
+              $prevOption.addClass('active');
+            }
+          } else if (event.keyCode === DOWN_KEYCODE) {
+            event.preventDefault();
+            var $nextOption;
+            if ($activeOption.length) {
+              $nextOption = $activeOption.next();
+            } else {
+              $nextOption = $activeOptions.children().first();
+            }
+
+            $activeOption.removeClass('active');
+            if ($nextOption.length) { // there exists a next sibling
+              $nextOption.addClass('active');
+            }
           }
         }
       });
