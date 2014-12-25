@@ -58,27 +58,6 @@
       });
     }
 
-    function exportStructTo(structIndex) {
-      var mvn = MarvinJSUtil.getEditor("#sketch");
-      mvn.then(function (sketcherInstance) {
-
-        sketcherInstance.exportStructure("mrv").then(function(mol) {
-          structures[structIndex].mol = mol;
-        }, function(error) {
-          alert("Mol export failed:"+error);
-        });
-
-        sketcherInstance.exportStructure("png", imgSettings).then(function(img) {
-          structures[structIndex].img = img;
-          $("#figures").append("<img id='"+structures[structIndex].name+"' class='thumbnails bordered'/>");
-          $("#"+structures[structIndex].name).attr("src", img);
-        }, function(error) {
-          alert("Img export failed:"+error);
-        });
-
-      });
-    }
-
     function getIndex(name) {
       for (var struct in structures) {
         if (structures[struct].name == name) {
@@ -121,6 +100,7 @@
 
         sketcherInstance.exportStructure("mrv").then(function(mol) {
           structures[structIndex].mol = mol;
+          console.log(mol);
         }, function(error) {
           alert("Mol export failed:"+error);
         });
