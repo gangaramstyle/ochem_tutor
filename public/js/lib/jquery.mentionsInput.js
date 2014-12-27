@@ -17,7 +17,7 @@
   var defaultSettings = {
     triggerChar   : '@', //Char that respond to event
     onDataRequest : $.noop, //Function where we can search the data
-    minChars      : 2, //Minimum chars to fire the event
+    minChars      : 1, //Minimum chars to fire the event
     allowRepeat   : false, //Allow repeat mentions
     showAvatars   : true, //Show the avatars
     elastic       : true, //Grow the textarea automatically
@@ -27,9 +27,10 @@
     templates     : {
       wrapper                    : _.template('<div class="mentions-input-box"></div>'),
       autocompleteList           : _.template('<div class="mentions-autocomplete-list"></div>'),
-      autocompleteListItem       : _.template('<li data-ref-id="<%= id %>" data-ref-type="<%= type %>" data-display="<%= display %>"><%= content %></li>'),
+      autocompleteListItem       : _.template('<li class="autocomplete-item" data-ref-id="<%= id %>" data-ref-type="<%= type %>" data-display="<%= display %>"><%= content %></li>'),
       autocompleteListItemAvatar : _.template('<img src="<%= avatar %>" />'),
       autocompleteListItemIcon   : _.template('<div class="icon <%= icon %>"></div>'),
+      autocompleteListPlus       : _.template('<li class="autocomplete-plus">Create new <%= content %></li>'),
       mentionsOverlay            : _.template('<div class="mentions"><div></div></div>'),
       mentionItemSyntax          : _.template('@[<%= value %>](<%= type %>:<%= id %>)'),
       mentionItemHighlight       : _.template('<strong><span><%= value %></span></strong>')
@@ -76,7 +77,6 @@
 
   //Main class of MentionsInput plugin
   var MentionsInput = function (settings) {
-
     var domInput, elmInputBox, elmInputWrapper, elmAutocompleteList, elmWrapperBox, elmMentionsOverlay, elmActiveAutoCompleteItem;
     var mentionsCollection = [];
     var autocompleteItemCollection = {};
@@ -85,7 +85,6 @@
 
   //Mix the default setting with the users settings
     settings = $.extend(true, {}, defaultSettings, settings );
-
   //Initializes the text area target
     function initTextarea() {
       elmInputBox = $(domInput); //Get the text area target
@@ -113,11 +112,15 @@
       }
     }
 
+
   //Initializes the autocomplete list, append to elmWrapperBox and delegate the mousedown event to li elements
     function initAutocomplete() {
       elmAutocompleteList = $(settings.templates.autocompleteList()); //Get the HTML code for the list
       elmAutocompleteList.appendTo(elmWrapperBox); //Append to elmWrapperBox element
-      elmAutocompleteList.delegate('li', 'mousedown', onAutoCompleteItemClick); //Delegate the event
+      elmAutocompleteList.delegate('li.autocomplete-item', 'mousedown', onAutoCompleteItemClick); //Delegate the event
+      if (settings.plusCallback) {
+        elmAutocompleteList.delegate('li.autocomplete-plus', 'mousedown', onAutoCompletePlusClick);
+      }
     }
 
   //Initializes the mentions' overlay
@@ -231,6 +234,12 @@
 
       scrollToInput();
 
+      return false;
+    }
+
+    function onAutoCompletePlusClick(e) {
+      settings.plusCallback();
+      // do not add mention (?)
       return false;
     }
 
@@ -361,7 +370,9 @@
 
       elmAutocompleteList.empty(); //Remove all li elements in autocomplete list
       var elmDropDownList = $("<ul>").appendTo(elmAutocompleteList).hide(); //Inserts a ul element to autocomplete div and hide it
-
+      if (settings.plusCallback) {
+        $(settings.templates.autocompleteListPlus({ 'content' : 'structure' })).appendTo(elmDropDownList);
+      }
       _.each(results, function (item, index) {
         var itemUid = _.uniqueId('mention_'); //Gets the item with unique id
 

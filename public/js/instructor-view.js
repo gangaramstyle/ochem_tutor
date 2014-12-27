@@ -147,6 +147,12 @@
     });
 
     $('textarea.content.mention').mentionsInput({
+      // plusCallback will be invoked when user clicks "Create new [x]" ...
+      // if not specified then autocomplete list will not contain this option
+      plusCallback: function() {
+        createNewStruct(defaultMol);
+        $('#marvinjs').modal('show');
+      },
       onDataRequest: function(mode, query, callback) {
         InstructorModel.loadStructures(query, function(error, structures) {
           structures.forEach(function(structure) {
