@@ -11,7 +11,7 @@ module.exports = function(app) {
 
   app.post('/instructor/new-question', function(req, res) {
     if (!req.body.content) { // || !req.body.conceptTags
-      res.send(422, 'Must provide title, content and concept tags.');
+      res.send(422, 'Must provide title, content and concept names.');
       return;
     }
 
@@ -56,20 +56,20 @@ module.exports = function(app) {
         throw error;
       } else {
         res.json(200, concepts.filter(function(concept) {
-          return concept.tag.toLowerCase().indexOf(query.toLowerCase()) > -1;
+          return concept.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
         }));
       }
     });
   });
 
   app.post('/instructor/new-concept', function(req, res) {
-    if (!req.body.tag) {
-      res.send(422, 'Must provide tag.');
+    if (!req.body.name) {
+      res.send(422, 'Must provide name of concept.');
       return;
     }
 
     var concept = new Concept({
-      tag: req.body.tag
+      name: req.body.name
     });
 
     concept.save(function(error, concept) {
@@ -92,7 +92,7 @@ module.exports = function(app) {
         throw error;
       } else {
         res.json(200, structures.filter(function(structure) {
-          return structure.tag.toLowerCase().indexOf(query.toLowerCase()) > -1;
+          return structure.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
         }));
       }
     });

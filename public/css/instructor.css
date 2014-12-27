@@ -44,22 +44,62 @@ a:hover, a:focus {
   min-height: 100%;
   /*background-color: red;*/
   display: table-cell;
-  padding: 0px 50px;
+  padding: 0px 25px;
 }
 
-form input, textarea {
-  margin: 10px 0px;
-  padding: 5px;
+#dashboard h1 {
+  font-size: 2em;
+  margin: 0px;
+}
+
+#dashboard .new-question {
+  padding-top: 10px;
+}
+
+#dashboard .divider {
+  background-color: #eee;
+  width: 100%;
+  height: 4px;
+}
+
+#new-question-form {
+  position: relative;
+}
+div.entry {
+  margin-bottom: 10px;
+}
+textarea.content {
+  margin: 0px;
   display: block;
+  width: 100%;
+  padding: 8px;
+  -webkit-transition: height 0.2s;
+  -moz-transition: height 0.2s;
+  transition: height 0.2s;
+}
+textarea.content:focus {
+  outline: none;
 }
 
-form input.title {
+
+.autocomplete-panel {
+  margin: 0px;
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  width: 100%;
+  -webkit-box-shadow: 0px 5px 15px 0px rgba(203,203,203,0.75);
+  -moz-box-shadow: 0px 5px 15px 0px rgba(203,203,203,0.75);;
+  box-shadow: 0px 5px 15px 0px rgba(203,203,203,0.75);
 }
 
-form textarea.content {
-  width: 480px;
+.autocomplete-option.active {
+  background-color: red;
 }
 
+.autocomplete-option {
+  padding: 2px 4px;
+}
 .concept-tags-container {
   width: 480px;
   border: 1px solid #a9a9a9;
@@ -102,13 +142,8 @@ a.remove:hover {
   margin: 1px;
 }
 
-.autocomplete-panel {
-  position: absolute;
-  z-index: 1000;
-  background-color: white;
-  width: 100%;
+.test {
+  border: 1px solid red;
 }
 
-.autocomplete-option.active {
-  background-color: red;
-}
+

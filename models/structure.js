@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 
 var structureSchema = new mongoose.Schema({
-  tag: String,
+  name: String,
   structure: String
 });
 

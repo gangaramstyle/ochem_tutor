@@ -90,7 +90,7 @@
    * Posts new concept.
    *
    * Calls: callback(error, results)
-   *  concept -- {tag: 'Ketone'}
+   *  concept -- {name: 'Ketone'}
    *  error -- the error that occurred or NULL if no error occurred
    */
   InstructorModel.newConcept = function(concept, callback) {

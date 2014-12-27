@@ -1,8 +1,9 @@
 extend layout
 
 block content
-  link(rel="stylesheet", href="/css/lib/bootstrap-tags.css")
+  link(rel="stylesheet", href="/css/lib/jquery.mentionsInput.css")
   link(rel="stylesheet", href="/css/instructor.css")
+
 
   //- h1 Greetings, Instructor #{username}!
   div.sidebar
@@ -19,37 +20,47 @@ block content
   div#dashboard
 
   script(type="text/x-handlebars-template" id="new-question-template")
-    button#Modal.btn.btn-default(type="button") Modal
 
 
-    h1 Insert New Question
-    div.error
-    div.success
-    form.new-question
-      textarea.content(name="question" placeholder="Question" rows="6")
-      div.autocomplete-panel
-      textarea.content(name="answer" placeholder="Answer" rows="6")
-      input.concept-tags(placeholder="Tags")
-      div#figures
-      button.btn.btn-default Preview
-      button.btn.btn-default Submit
 
-    div#marvinjs.modal.fade(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
-      div.modal-dialog
-        div.modal-content
-          div.modal-header
-            button.close(type="button" data-dismiss="modal" aria-label="Close")
-              span(aria-hidden="true")
-                &times;
-            h4.modal-title#myModal Insert Structure
-          div.modal-body
-            div#structure-tools
-              iframe(id="sketch" src="/js/lib/marvinjs/editor.html" style="width:100%;")
-              div
-                button#insert.btn.btn-default Insert
-                button#delete.btn.btn-default Delete
-                button.btn.btn-default Cancel
-              div
+    div.col-md-6
+      h1 Insert New Question
+      div.new-question
+        form(id='new-question-form')
+          div.status
+          textarea.content.mention(placeholder="Question" rows="1")
+          textarea.content.mention(placeholder="Answer" rows="1")
+
+          //- div.entry(name="question")
+          //-   textarea.content(placeholder="Question" rows="1")
+          //-   div.autocomplete-panel
+          //- div.entry(name="answer")
+          //-   textarea.content(placeholder="Answer" rows="1")
+          //-   div.autocomplete-panel
+
+          textarea.concept-tags.mention(placeholder="Tags" rows="1")
+          div#figures
+          button.btn.btn-default Preview
+          button.btn.btn-default Submit
+        button#Modal.btn.btn-default(type="button") Modal
+
+        div#marvinjs.modal.fade(tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true")
+          div.modal-dialog
+            div.modal-content
+              div.modal-header
+                button.close(type="button" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden="true")
+                    &times;
+                h4.modal-title#myModal Insert Structure
+              div.modal-body
+                div#structure-tools
+                  iframe(id="sketch" src="/js/lib/marvinjs/editor.html" style="width:100%;")
+                  div
+                    button#insert.btn.btn-default Insert
+                    button#delete.btn.btn-default Delete
+                    button.btn.btn-default Cancel
+                  div
+    div.col-md-6
 
 
 
@@ -79,11 +90,11 @@ block content
   script(type="text/x-handlebars-template" id="autocomplete-panel-template")
     div.autocomplete-options
       div.autocomplete-option.active
-        p.autocomplete-option-label New Structure
+        div.autocomplete-option-label New Structure
 
   script(type="text/x-handlebars-template" id="autocomplete-option-template")
     div.autocomplete-option
-      p.autocomplete-option-label {{structure.tag}}
+      div.autocomplete-option-label {{structure.tag}}
 
   script(type="text/x-handlebars-template" id="concept-tag-template")
     div.concept-tag
@@ -91,8 +102,10 @@ block content
       a.remove
         i.fa.fa-remove
 
-  script(src="/js/lib/bootstrap-tags.min.js")
-  script(src="/js/lib/jquery.caret.min.js")
+  script(src="/js/lib/underscore.min.js")
+  script(src="/js/lib/jquery.elastic.js")
+  script(src="/js/lib/jquery.events.input.js")
+  script(src="/js/lib/jquery.mentionsInput.js")
 
   script(src="/js/instructor-model.js")
   script(src="/js/instructor-view.js")

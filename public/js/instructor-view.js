@@ -1,5 +1,6 @@
 (function(window, document, undefined) {
 
+  var ENTER_KEYCODE = 13;
   var SPACE_KEYCODE = 32;
   var UP_KEYCODE = 38;
   var DOWN_KEYCODE = 40;
@@ -145,99 +146,130 @@
       $('#marvinjs').modal('hide');
     });
 
-
-
-
-
-    var $newQuestion = $('form.new-question');
-    initializeListeners($newQuestion.find('textarea.content[name="question"]'));
-    initializeListeners($newQuestion.find('textarea.content[name="answer"]'));
-
-
-    function initializeListeners($content) {
-      var startCaretPos = -1;
-      var endCaretPos = -1;
-
-      // Insert structure-tag related @ listener
-      $content.keypress(function(event) {
-        var curCaretPos = $content.caret(); // caret position before character insertion
-        if (event.keyCode === AT_KEYCODE) {
-          startCaretPos = curCaretPos + 1;
-        } else if (event.keyCode === SPACE_KEYCODE) {
-          startCaretPos = -1;
-        } else if (startCaretPos >= 0 && startCaretPos < curCaretPos + 1) {
-          var textareaValue = $content.val();
-          var tagValue = (textareaValue.substr(startCaretPos, curCaretPos - startCaretPos) + String.fromCharCode(event.keyCode));
-          InstructorModel.loadStructures(tagValue, function(error, structures) {
-            console.log(structures);
-            var $panel = $('.autocomplete-panel');
-            // insert as a sibling of $content
-            $panel.html($(templates.renderAutocompletePanel()));
-            var $options = $('.autocomplete-options');
-            structures.forEach(function(structure) {
-              var $option = $(templates.renderAutocompleteOption({structure: structure}));
-              $options.append($option);
-            });
+    $('textarea.content.mention').mentionsInput({
+      onDataRequest: function(mode, query, callback) {
+        InstructorModel.loadStructures(query, function(error, structures) {
+          structures.forEach(function(structure) {
+            structure.id = structure._id;
+            structure.type = 'structure';
           });
-        }
-      });
+          callback.call(this, structures);
+        });
+      }
+    });
 
-      // Keyup fires after default action of the key (caret position has been incremented)
-      $content.keyup(function(event) {
-        var curCaretPos = $content.caret(); // caret position after caret moves
+    $('textarea.concept-tags.mention').mentionsInput({
+      onDataRequest: function(mode, query, callback) {
+        InstructorModel.loadConcepts(query, function(error, concepts) {
+          concepts.forEach(function(concept) {
+            concept.id = concept._id;
+            concept.type = 'concept';
+          });
+          callback.call(this, concepts);
+        });
+      }
+    });
 
-        if (curCaretPos < startCaretPos) {
-          startCaretPos = -1;
-          $('.autocomplete-options').remove();
-        } else {
-          var textareaValue = $content.val();
+    // // Enable /js/lib/jquery.autosize.min.js
+    // $('textarea').autosize();
 
-          // should also break tag on newlines
-          var spacePos = textareaValue.substr(0, curCaretPos).lastIndexOf(' ') + 1; // if no space exists, spacePos will be 0
-          var atPos = textareaValue.substr(spacePos, curCaretPos - spacePos).indexOf('@'); // relative to the space
-          if (atPos >= 0) {
-            startCaretPos = spacePos + atPos + 1;
-          } else {
-            startCaretPos = -1;
-            $('.autocomplete-options').remove();
-          }
-        }
-      });
+    // var $newQuestion = $('#new-question-form');
+    // initializeListeners($newQuestion.find('div.entry[name="question"]'));
+    // initializeListeners($newQuestion.find('div.entry[name="answer"]'));
 
-      $content.keydown(function(event) {
-        var curCaretPos = $content.caret(); // caret position before caret moves
-        if (startCaretPos >= 0) {
-          var $activeOptions = $('.autocomplete-options');
-          var $activeOption = $('.autocomplete-option.active');
-          if (event.keyCode === UP_KEYCODE) {
-            event.preventDefault();
-            var $prevOption;
-            if ($activeOption.length) {
-              $prevOption = $activeOption.prev();
-            } else {
-              $prevOption = $activeOptions.children().last();
-            }
-            $activeOption.removeClass('active');
-            if ($prevOption.length) { // there exists a previous sibling
-              $prevOption.addClass('active');
-            }
-          } else if (event.keyCode === DOWN_KEYCODE) {
-            event.preventDefault();
-            var $nextOption;
-            if ($activeOption.length) {
-              $nextOption = $activeOption.next();
-            } else {
-              $nextOption = $activeOptions.children().first();
-            }
 
-            $activeOption.removeClass('active');
-            if ($nextOption.length) { // there exists a next sibling
-              $nextOption.addClass('active');
-            }
-          }
-        }
-      });
-    }
+    // function initializeListeners($entry) {
+    //   var startCaretPos = -1;
+    //   var endCaretPos = -1;
+    //   var $content = $entry.find('textarea.content');
+    //   // Insert structure-tag related @ listener
+    //   $content.keypress(function(event) {
+    //     var curCaretPos = $content.caret(); // caret position before character insertion
+    //     if (event.keyCode === AT_KEYCODE) {
+    //       startCaretPos = curCaretPos + 1;
+    //     } else if (event.keyCode === SPACE_KEYCODE) {
+    //       startCaretPos = -1;
+    //     } else if (startCaretPos >= 0 && startCaretPos < curCaretPos + 1) {
+    //       if (event.keyCode === ENTER_KEYCODE) {
+    //         var $activeOption = $entry.find('.autocomplete-option.active')
+    //         if ($activeOption.length === 1) {
+    //           event.preventDefault();
+    //           console.log('here');
+    //           return;
+    //         }
+    //       }
+    //       var textareaValue = $content.val();
+    //       var tagValue = (textareaValue.substr(startCaretPos, curCaretPos - startCaretPos) + String.fromCharCode(event.keyCode));
+    //       InstructorModel.loadStructures(tagValue, function(error, structures) {
+    //         console.log(structures);
+    //         var $panel = $entry.find('.autocomplete-panel');
+    //         // insert as a sibling of $content
+    //         $panel.html($(templates.renderAutocompletePanel()));
+    //         var $options = $('.autocomplete-options');
+    //         structures.forEach(function(structure) {
+    //           var $option = $(templates.renderAutocompleteOption({structure: structure}));
+    //           $options.append($option);
+    //         });
+    //       });
+    //     }
+    //   });
+
+    //   // Keyup fires after default action of the key (caret position has been incremented)
+    //   $content.keyup(function(event) {
+    //     var curCaretPos = $content.caret(); // caret position after caret moves
+
+    //     if (curCaretPos < startCaretPos) {
+    //       startCaretPos = -1;
+    //       $('.autocomplete-options').remove();
+    //     } else {
+    //       var textareaValue = $content.val();
+
+    //       // should also break tag on newlines
+    //       var spacePos = textareaValue.substr(0, curCaretPos).lastIndexOf(' ') + 1; // if no space exists, spacePos will be 0
+    //       var atPos = textareaValue.substr(spacePos, curCaretPos - spacePos).indexOf('@'); // relative to the space
+    //       if (atPos >= 0) {
+    //         startCaretPos = spacePos + atPos + 1;
+    //       } else {
+    //         startCaretPos = -1;
+    //         $('.autocomplete-options').remove();
+    //       }
+    //     }
+    //   });
+
+    //   $content.keydown(function(event) {
+    //     var curCaretPos = $content.caret(); // caret position before caret moves
+    //     if (startCaretPos >= 0) {
+    //       var $activeOptions = $('.autocomplete-options');
+    //       var $activeOption = $('.autocomplete-option.active');
+    //       if (event.keyCode === UP_KEYCODE) {
+    //         event.preventDefault();
+    //         var $prevOption;
+    //         if ($activeOption.length) {
+    //           $prevOption = $activeOption.prev();
+    //         } else {
+    //           $prevOption = $activeOptions.children().last();
+    //         }
+    //         $activeOption.removeClass('active');
+    //         if ($prevOption.length) { // there exists a previous sibling
+    //           $prevOption.addClass('active');
+    //         }
+    //       } else if (event.keyCode === DOWN_KEYCODE) {
+    //         event.preventDefault();
+    //         var $nextOption;
+    //         if ($activeOption.length) {
+    //           $nextOption = $activeOption.next();
+    //         } else {
+    //           $nextOption = $activeOptions.children().first();
+    //         }
+
+    //         $activeOption.removeClass('active');
+    //         if ($nextOption.length) { // there exists a next sibling
+    //           $nextOption.addClass('active');
+    //         }
+    //       }
+    //     }
+    //   });
+    // }
 
     // Insert concept-tag related listener
 
