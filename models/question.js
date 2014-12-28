@@ -1,10 +1,11 @@
 var mongoose = require('mongoose');
 
 var questionSchema = new mongoose.Schema({
-  content: String,
   concepts: [],
+  content: String,
+  numAttempts: Number,
   numCorrect: Number,
-  numResponses: Number
+  structures: [],
 });
 
 module.exports = mongoose.model('Question', questionSchema);

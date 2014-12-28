@@ -10,16 +10,17 @@ module.exports = function(app) {
   });
 
   app.post('/instructor/new-question', function(req, res) {
-    if (!req.body.content) { // || !req.body.conceptTags
+    if (!req.body.content) { // || !req.body.concepts || !req.body.structures
       res.send(422, 'Must provide title, content and concept names.');
       return;
     }
 
     var question = new Question({
-      content: req.body.content,
       concepts: req.body.concepts,
+      content: req.body.content,
+      numAttempts: 0,
       numCorrect: 0,
-      numResponses: 0
+      structures: req.body.structures
     });
 
     question.save(function(error, question) {
@@ -94,6 +95,80 @@ module.exports = function(app) {
         res.json(200, structures.filter(function(structure) {
           return structure.name.toLowerCase().indexOf(query.toLowerCase()) > -1;
         }));
+      }
+    });
+  });
+
+  app.get('/instructor/structure', function(req, res) {
+    var id = req.query.id;
+    if (id === undefined) {
+      res.send(422, 'Must provide id.');
+      return;
+    }
+    Structure.findById(id, function(error, structure) {
+      if (error) {
+        throw error;
+      } else {
+        res.json(200, structure);
+      }
+    });
+  });
+
+  app.post('/instructor/update-structure', function(req, res) {
+    if (!('id' in req.body) || !('isGlobal' in req.body) || !('name' in req.body) || !('structure' in req.body) || !('image' in req.body)) {
+      res.send(422, 'Must provide image, name, scope, structure of structure.');
+      return;
+    }
+    Structure.findById(req.body.id, function(error, structure) {
+      if (error) {
+        throw error;
+      }
+      structure.image = req.body.image;
+      structure.isGlobal = req.body.isGlobal;
+      structure.name = req.body.name;
+      structure.structure = req.body.structure;
+      structure.save(function(error) {
+        if (error) {
+          throw error;
+        } else {
+          res.json(200, structure);
+        }
+      });
+    });
+  });
+
+  app.post('/instructor/new-structure', function(req, res) {
+    if (req.body.isGlobal === undefined || req.body.name === undefined || req.body.structure === undefined || req.body.image === undefined) {
+      res.send(422, 'Must provide image, name, scope, structure of structure.');
+      return;
+    }
+    var structure = new Structure({
+      image: req.body.image,
+      isGlobal: req.body.isGlobal,
+      name: req.body.name,
+      structure: req.body.structure
+    });
+    structure.save(function(error, structure) {
+      if (error) {
+        throw error;
+      } else {
+        res.json(200, structure);
+      }
+    });
+  });
+
+  app.post('/instructor/remove-structure', function(req, res) {
+    var id = req.body.id;
+    if (!id) {
+      res.send(422, 'Must provide an id.');
+      return;
+    }
+
+    Structure.findByIdAndRemove(id, function(error, structure) {
+      if (error) {
+        throw error;
+      } else {
+        res.send(200);
       }
     });
   });

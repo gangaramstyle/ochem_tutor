@@ -108,6 +108,51 @@
     request.send(JSON.stringify(concept));
   };
 
+
+  InstructorModel.newStructure = function(structure, callback) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function() {
+      if (request.status === STATUS_OK) {
+        callback(null, JSON.parse(request.responseText));
+      } else {
+        callback(request.responseText);
+      }
+    });
+
+    request.open('POST', INSTRUCTOR_URL + '/new-structure', true);
+    request.setRequestHeader('Content-type', 'application/json');
+    request.send(JSON.stringify(structure));
+  };
+
+  InstructorModel.updateStructure = function(structure, callback) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function() {
+      if (request.status === STATUS_OK) {
+        callback(null, JSON.parse(request.responseText));
+      } else {
+        callback(request.responseText);
+      }
+    });
+
+    request.open('POST', INSTRUCTOR_URL + '/update-structure', true);
+    request.setRequestHeader('Content-type', 'application/json');
+    request.send(JSON.stringify(structure));
+  };
+
+  InstructorModel.loadStructure = function(id, callback) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function() {
+      if (request.status === STATUS_OK) {
+        callback(null, JSON.parse(request.responseText));
+      } else {
+        callback(request.responseText);
+      }
+    });
+
+    request.open('GET', INSTRUCTOR_URL + '/structure?id=' + id, true);
+    request.send();
+  }
+
   /**
    * Loads structures containing query as a substring.
    *
@@ -126,6 +171,27 @@
 
     request.open('GET', INSTRUCTOR_URL + '/structures?query=' + query, true);
     request.send();
+  }
+
+  /**
+   * Removes structure specified by id.
+   *
+   * Calls: callback(error, results)
+   *  error -- the error that occurred or NULL if no error occurred
+   */
+  InstructorModel.removeStructure = function(id, callback) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function() {
+      if (request.status === STATUS_OK) {
+        callback(null);
+      } else {
+        callback(request.responseText);
+      }
+    });
+
+    request.open('POST', INSTRUCTOR_URL + '/remove-structure', true);
+    request.setRequestHeader('Content-type', 'application/json');
+    request.send(JSON.stringify({ id: id }));
   }
 
   window.InstructorModel = InstructorModel;
