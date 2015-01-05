@@ -39,6 +39,7 @@
       plusCallback: function() {
         InstructorView.renderStructureModal($('#marvin'), null, function() {
           /* Insert reference into question */
+          alert('hi');
         });
       },
       onDataRequest: function(mode, query, callback) {

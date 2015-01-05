@@ -2,6 +2,7 @@ extend layout
 
 block content
   link(rel="stylesheet", href="/css/lib/jquery.mentionsInput.css")
+
   link(rel="stylesheet", href="/css/instructor.css")
 
 
@@ -25,7 +26,7 @@ block content
       div.new-question
         form(id='new-question-form')
           div.status
-          textarea.content.mention(placeholder="Question" rows="1")
+          textarea.content.mention.question(placeholder="Question" rows="1")
           textarea.content.mention(placeholder="Answer" rows="1")
           textarea.concept-tags.mention(placeholder="Tags" rows="1")
           div#figure-tiles
@@ -79,6 +80,7 @@ block content
     img.thumbnails.bordered(src="{{src}}" data-id="{{dataId}}")
 
   script(src="/js/lib/underscore.min.js")
+  script(src="/js/lib/jquery.caret.js")
   script(src="/js/lib/jquery.elastic.js")
   script(src="/js/lib/jquery.events.input.js")
   script(src="/js/lib/jquery.mentionsInput.js")

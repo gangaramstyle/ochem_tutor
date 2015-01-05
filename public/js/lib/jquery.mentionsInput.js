@@ -18,7 +18,7 @@
     triggerChar   : '@', //Char that respond to event
     onDataRequest : $.noop, //Function where we can search the data
     minChars      : 1, //Minimum chars to fire the event
-    allowRepeat   : false, //Allow repeat mentions
+    allowRepeat   : true, //Allow repeat mentions
     showAvatars   : true, //Show the avatars
     elastic       : true, //Grow the textarea automatically
     classes       : {
@@ -82,6 +82,8 @@
     var autocompleteItemCollection = {};
     var inputBuffer = [];
     var currentDataQuery = '';
+    var newFigureIndex = 1;
+    var mentionIndices = [];
 
   //Mix the default setting with the users settings
     settings = $.extend(true, {}, defaultSettings, settings );
@@ -129,9 +131,12 @@
       elmMentionsOverlay.prependTo(elmWrapperBox); //Insert into elmWrapperBox the mentions overlay
     }
 
+
+
   //Updates the values of the main variables
     function updateValues() {
       var syntaxMessage = getInputBoxValue(); //Get the actual value of the text area
+
 
       _.each(mentionsCollection, function (mention) {
         var textSyntax = settings.templates.mentionItemSyntax(mention);
@@ -146,7 +151,34 @@
         var textHighlight = settings.templates.mentionItemHighlight(formattedMention);
 
         mentionText = mentionText.replace(new RegExp(utils.regexpEncode(textSyntax), 'g'), textHighlight);
+        //console.log(mentionText);
       });
+
+      // decompose
+      var startTag = "<strong><span>";
+      var endTag = "<\/span><\/strong>";
+      var mentionStarts = [];
+      var mentionEnds = [];
+
+      //console.log(mentionText);
+      var startInd = 0;
+      var endInd = 0;
+      mentionIndices = [];
+
+      while (startInd != -1 && endInd != -1) {
+        var mentionInd = [0,0];
+        startInd = mentionText.indexOf(startTag, endInd);
+        endInd = mentionText.indexOf(endTag, startInd);
+
+        if (startInd == -1 || endInd == -1) break;
+
+        mentionInd[0] = startInd - 30*(mentionIndices.length);
+        mentionInd[1] = endInd - 14 - 30*(mentionIndices.length);
+        mentionIndices.push(mentionInd);
+      }
+      console.log(mentionIndices);
+
+
 
       mentionText = mentionText.replace(/\n/g, '<br />'); //Replace the escape character for <br />
       mentionText = mentionText.replace(/ {2}/g, '&nbsp; '); //Replace the 2 preceding token to &nbsp;
@@ -180,7 +212,7 @@
       var regex = new RegExp("\\" + settings.triggerChar + currentDataQuery, "gi");
       regex.exec(currentMessage); //Executes a search for a match in a specified string. Returns a result array, or null
 
-      var startCaretPosition = regex.lastIndex - currentDataQuery.length - 1; //Set the star caret position
+      var startCaretPosition = regex.lastIndex - currentDataQuery.length - 1; //Set the start caret position
       var currentCaretPosition = regex.lastIndex; //Set the current caret position
 
       var start = currentMessage.substr(0, startCaretPosition);
@@ -188,9 +220,11 @@
       var startEndIndex = (start + mention.value).length + 1;
 
       // See if there's the same mention in the list
-      if( !_.find(mentionsCollection, function (object) { return object.id == mention.id; }) ) {
+      //if( !_.find(mentionsCollection, function (object) { return object.id == mention.id; }) ) {
+        mention.value = "figure " + newFigureIndex;
+        newFigureIndex++;
         mentionsCollection.push(mention);//Add the mention to mentionsColletions
-      }
+      //}
 
       // Cleaning before inserting the value, otherwise auto-complete would be triggered with "old" inputbuffer
       resetBuffer();
@@ -204,7 +238,7 @@
 
       // Set correct focus and selection
       elmInputBox.focus();
-      utils.setCaratPosition(elmInputBox[0], startEndIndex);
+      utils.setCaratPosition(elmInputBox[0], (start + mention.value).length + 1);
     }
 
   //Gets the actual value of the text area without white spaces from the beginning and end of the value
@@ -255,8 +289,9 @@
 
   //Takes the input event when users write or delete something
     function onInputBoxInput(e) {
-      updateValues();
       updateMentionsCollection();
+      updateValues();
+      
 
       var triggerCharIndex = _.lastIndexOf(inputBuffer, settings.triggerChar); //Returns the last match of the triggerChar in the inputBuffer
       if (triggerCharIndex > -1) { //If the triggerChar is present in the inputBuffer array
@@ -295,7 +330,35 @@
 
     //If the key pressed was the backspace
       if (e.keyCode === KEY.BACKSPACE) {
+        var start = $(e.target).caret().start;
+        var end = $(e.target).caret().end;
+        originalText = $(e.target).val();
+
+        console.log(mentionIndices);
+        for (var i = 0; i < mentionIndices.length; i++) {
+          if (start > mentionIndices[i][0] && start < mentionIndices[i][1] + 1) {
+            start = mentionIndices[i][0];
+          }
+          if (end > mentionIndices[i][0] && end < mentionIndices[i][1] + 1) {
+            end = mentionIndices[i][1];
+          }
+
+        }
+        $(e.target).val(originalText).caret(start,end);
+
+        //console.log(mentionText);
+        /*
+        if (start == end) {
+          newText = originalText.substring(0,end-1);
+          $(e.target).val(newText);
+        } else {
+          newText = originalText.substring(0,start) + originalText.substring(end);
+          $(e.target).val(newText).caret(start,start);
+        }
+
+        
         inputBuffer = inputBuffer.slice(0, -1 + inputBuffer.length); // Can't use splice, not available in IE
+        return false;*/
         return;
       }
 
