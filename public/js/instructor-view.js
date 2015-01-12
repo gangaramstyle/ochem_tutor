@@ -44,9 +44,11 @@
       },
       onDataRequest: function(mode, query, callback) {
         InstructorModel.loadStructures(query, function(error, structures) {
+          // Modify each structure prior to render
           structures.forEach(function(structure) {
             structure.id = structure._id;
             structure.type = 'structure';
+            structure.avatar = structure.image;
           });
           callback.call(this, structures);
         });

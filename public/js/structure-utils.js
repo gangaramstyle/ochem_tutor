@@ -42,6 +42,7 @@
     // TODO: client-side validation
     // TODO: save .png to MongoDB
     StructureUtils.exportStructure(marvinEditor, function(structure, image) {
+      console.log(image);
       InstructorModel.newStructure({
         isGlobal: isGlobal,
         name: name,

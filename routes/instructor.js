@@ -2,6 +2,10 @@ var Question = require('../models/question');
 var Concept = require('../models/concept');
 var Structure = require('../models/structure');
 
+var mongoose = require('mongoose');
+var Grid = require('gridfs-stream');
+var gfs = Grid(mongoose.models, mongoose.mongo);
+
 module.exports = function(app) {
   app.get('/instructor', function(req, res) {
     res.render('instructor', {
@@ -114,8 +118,33 @@ module.exports = function(app) {
     });
   });
 
+  app.post('/instructor/new-structure', function(req, res) {
+    if (req.body.isGlobal === undefined || req.body.name === undefined ||
+        req.body.structure === undefined || req.body.image === undefined) {
+      res.send(422, 'Must provide image, name, scope, structure of structure.');
+      return;
+    }
+    var id = ObjectId();
+    var structure = new Structure({
+      image: req.body.image,
+      isGlobal: req.body.isGlobal,
+      name: req.body.name,
+      structure: req.body.structure
+    });
+    var writeStream = gfs.createWriteStream({ _id: id });
+
+    structure.save(function(error, structure) {
+      if (error) {
+        throw error;
+      } else {
+        res.json(200, structure);
+      }
+    });
+  });
+
   app.post('/instructor/update-structure', function(req, res) {
-    if (!('id' in req.body) || !('isGlobal' in req.body) || !('name' in req.body) || !('structure' in req.body) || !('image' in req.body)) {
+    if (req.body.isGlobal === undefined || req.body.name === undefined ||
+        req.body.structure === undefined || req.body.image === undefined) {
       res.send(422, 'Must provide image, name, scope, structure of structure.');
       return;
     }
@@ -134,26 +163,6 @@ module.exports = function(app) {
           res.json(200, structure);
         }
       });
-    });
-  });
-
-  app.post('/instructor/new-structure', function(req, res) {
-    if (req.body.isGlobal === undefined || req.body.name === undefined || req.body.structure === undefined || req.body.image === undefined) {
-      res.send(422, 'Must provide image, name, scope, structure of structure.');
-      return;
-    }
-    var structure = new Structure({
-      image: req.body.image,
-      isGlobal: req.body.isGlobal,
-      name: req.body.name,
-      structure: req.body.structure
-    });
-    structure.save(function(error, structure) {
-      if (error) {
-        throw error;
-      } else {
-        res.json(200, structure);
-      }
     });
   });
 
